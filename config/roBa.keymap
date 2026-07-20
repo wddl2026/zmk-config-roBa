@@ -161,7 +161,7 @@
 &trans  &trans          &trans        &trans              &trans                                                       &trans      &trans  &trans  &trans  &trans
 &trans  &trans          &trans        &trans              &trans              &kp LC(C)                    &trans      &trans      &trans  &trans  &trans  &trans
 &trans  &trans          &trans        &trans              &trans              &kp LG(H)                    &kp LC(V)   &trans      &trans  &trans  &trans  &trans
-&trans  &kp LEFT_CTRL   &trans        &kp LG(LC(LEFT))    &kp LG(LC(RIGHT))   &lt 7 INT_MUHENKAN           &trans      &trans                              &kp INT_HENKAN
+&trans  &kp LEFT_CONTROL &trans       &kp LG(LC(LEFT))    &kp LG(LC(RIGHT))   &lt 7 INT_MUHENKAN           &trans      &trans                              &kp INT_HENKAN
             >;
 
             sensor-bindings = <&inc_dec_kp UP DOWN>;
