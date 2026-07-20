@@ -59,6 +59,18 @@
             key-positions = <0 1>;
         };
 
+        // コピー = X+C 同時押し（左手下段）。内側の⌘Cキーはダイヤル位置で物理キーが無いため
+        copy {
+            bindings = <&kp LG(C)>;
+            key-positions = <23 24>;
+        };
+
+        // ペースト = V+B 同時押し（左手下段）。内側の⌘Vキーはトラックボール位置で物理キーが無いため
+        paste {
+            bindings = <&kp LG(V)>;
+            key-positions = <25 26>;
+        };
+
         double_quotation {
             bindings = <&kp DOUBLE_QUOTES>;
             key-positions = <20 21>;
