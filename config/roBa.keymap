@@ -4,25 +4,25 @@
 #include <dt-bindings/zmk/pointing.h>
 
 /*
- * roBa キーマップ — Mac / Windows 両対応版
+ * roBa キーマップ — Mac / Windows 両対応版（ベース切替式）
  *
- * 普段は Mac 配列（レイヤー0）。Win モード（レイヤー6）をトグルONにすると、
- * OSで挙動が違うキーだけが上書きされ、同じ指の位置で Win 用の動作になる。
+ * Mac と Windows を「別々のベースレイヤー」で持ち、OS切替で排他的に切り替える。
+ * これによりコピペ等のコンボが OS ごとに正しい修飾キー（⌘ / Ctrl）で発火する。
  *
  * ┌ レイヤー一覧 ──────────────────────────────────┐
  * │ 0 MAC_BASE   … Mac ベース（デフォルト）          │
- * │ 1 FUNCTION   … F1-F12＋Bluetooth＋OS切替（Enter長押し）│
- * │ 2 NUM        … 数字・記号（Space長押し／共通）    │
- * │ 3 ARROW_MAC  … 移動・編集 Mac版（英数長押し）     │
+ * │ 1 WIN_BASE   … Windows ベース                    │
+ * │ 2 FUNCTION   … F1-F12＋Bluetooth＋OS切替（Enter長押し）│
+ * │ 3 NUM        … 数字・記号（Space長押し／共通）    │
  * │ 4 MOUSE      … ボール操作で自動（共通）          │
  * │ 5 SCROLL     … スクロール（共通）                │
- * │ 6 WIN_OVL    … Windows差分オーバーレイ（トグル）  │
+ * │ 6 ARROW_MAC  … 移動・編集 Mac版（英数長押し）     │
  * │ 7 ARROW_WIN  … 移動・編集 Win版（無変換長押し）   │
  * └──────────────────────────────────────────────┘
  *
- * Win モード切替: Enter長押し → 左手Aの位置（&tog 6）。もう一度で Mac に戻る。
- * ※ Windows 側の IME は「無変換=IMEオフ / 変換=IMEオン」に設定しておくと
- *    Mac の 英数/かな と同じ操作感になる（Microsoft IME のキー設定）。
+ * OS切替: Enter長押し（FUNCTION）→（左手）A = Windows へ / S = Mac へ
+ * コピー/ペーストは X+C / V+B のコンボ。OSに応じて ⌘C/⌘V か Ctrl+C/Ctrl+V を自動送出。
+ * ※ Windows 側の IME は「無変換=IMEオフ / 変換=IMEオン」に設定推奨（Microsoft IME）。
  */
 
 &mt {
@@ -59,16 +59,28 @@
             key-positions = <0 1>;
         };
 
-        // コピー = X+C 同時押し（左手下段）。内側の⌘Cキーはダイヤル位置で物理キーが無いため
-        copy {
+        // コピー = X+C。Mac(層0)=⌘C / Windows(層1)=Ctrl+C を自動で送り分け
+        copy_mac {
             bindings = <&kp LG(C)>;
             key-positions = <23 24>;
+            layers = <0>;
+        };
+        copy_win {
+            bindings = <&kp LC(C)>;
+            key-positions = <23 24>;
+            layers = <1>;
         };
 
-        // ペースト = V+B 同時押し（左手下段）。内側の⌘Vキーはトラックボール位置で物理キーが無いため
-        paste {
+        // ペースト = V+B。Mac(層0)=⌘V / Windows(層1)=Ctrl+V
+        paste_mac {
             bindings = <&kp LG(V)>;
             key-positions = <25 26>;
+            layers = <0>;
+        };
+        paste_win {
+            bindings = <&kp LC(V)>;
+            key-positions = <25 26>;
+            layers = <1>;
         };
 
         double_quotation {
@@ -105,12 +117,23 @@
     keymap {
         compatible = "zmk,keymap";
 
-        default_layer {
+        MAC_BASE {
             bindings = <
 &kp Q             &kp W         &kp E         &kp R                     &kp T                                                       &kp Y          &kp U        &lt 5 I    &kp O    &kp P
 &kp A             &kp S         &kp D         &kp F                     &kp G        &kp LG(C)                       &kp MINUS      &kp H          &kp J        &kp K      &kp L    &kp SQT
 &mt LEFT_SHIFT Z  &kp X         &kp C         &kp V                     &kp B        &kp LC(LA(A))                   &kp LG(V)      &kp N          &kp M        &kp COMMA  &kp DOT  &kp SLASH
-&lt 2 SPACE       &kp LEFT_WIN  &kp LEFT_ALT  &kp LC(LEFT_ARROW)        &kp LC(RIGHT_ARROW)      &lt_to_layer_0 3 LANG2      &kp BACKSPACE  &lt 1 ENTER                                      &kp LANG1
+&lt 3 SPACE       &kp LEFT_WIN  &kp LEFT_ALT  &kp LC(LEFT_ARROW)        &kp LC(RIGHT_ARROW)      &lt_to_layer_0 6 LANG2      &kp BACKSPACE  &lt 2 ENTER                                      &kp LANG1
+            >;
+
+            sensor-bindings = <&inc_dec_kp UP DOWN>;
+        };
+
+        WIN_BASE {
+            bindings = <
+&kp Q             &kp W         &kp E         &kp R                     &kp T                                                       &kp Y          &kp U        &lt 5 I    &kp O    &kp P
+&kp A             &kp S         &kp D         &kp F                     &kp G        &kp LC(C)                       &kp MINUS      &kp H          &kp J        &kp K      &kp L    &kp SQT
+&mt LEFT_SHIFT Z  &kp X         &kp C         &kp V                     &kp B        &kp LG(H)                       &kp LC(V)      &kp N          &kp M        &kp COMMA  &kp DOT  &kp SLASH
+&lt 3 SPACE       &kp LEFT_CONTROL &kp LEFT_ALT &kp LG(LC(LEFT_ARROW)) &kp LG(LC(RIGHT_ARROW))  &lt 7 INT_MUHENKAN          &kp BACKSPACE  &lt 2 ENTER                                      &kp INT_HENKAN
             >;
 
             sensor-bindings = <&inc_dec_kp UP DOWN>;
@@ -119,7 +142,7 @@
         FUNCTION {
             bindings = <
 &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2   &bt BT_SEL 3  &bt BT_SEL 4                        &kp F1   &kp F2  &kp F3  &kp F4  &kp F5
-&tog 6        &trans        &trans         &trans        &trans  &trans          &kp F13      &kp F6   &kp F7  &kp F8  &kp F9  &kp F10
+&to 1         &to 0         &trans         &trans        &trans  &trans          &kp F13      &kp F6   &kp F7  &kp F8  &kp F9  &kp F10
 &bootloader   &bt BT_CLR    &bt BT_CLR_ALL &trans        &trans  &trans          &trans       &trans   &trans  &trans  &trans  &kp F11
 &trans        &trans        &trans         &trans        &trans  &trans          &trans       &trans                           &kp F12
             >;
@@ -134,17 +157,6 @@
 &mt LEFT_SHIFT KP_NUMBER_0  &kp KP_NUMBER_1  &kp KP_NUMBER_2  &kp KP_NUMBER_3  &kp PERIOD    &kp EQUAL                    &kp SEMICOLON   &kp LEFT_BRACKET  &kp RIGHT_BRACKET  &kp LEFT_BRACE  &kp RIGHT_BRACE       &kp BACKSLASH
 &trans                      &trans           &trans           &trans           &trans        &trans                       &trans          &trans                                                                     &kp PIPE
             >;
-        };
-
-        ARROW_MAC {
-            bindings = <
-&kp ESCAPE      &kp LC(LS(TAB))         &kp UP_ARROW    &kp LC(TAB)              &kp LG(W)                                  &trans  &trans                &trans  &trans                 &trans
-&kp HOME        &kp LEFT_ARROW          &kp DOWN_ARROW  &kp RIGHT_ARROW          &kp END  &kp LC(LG(LS(NUMBER_4)))   &trans  &kp LG(LEFT_BRACKET)  &trans  &trans  &kp LG(RIGHT_BRACKET)  &trans
-&kp LEFT_SHIFT  &kp LG(LS(LEFT_ARROW))  &trans          &kp LG(LS(RIGHT_ARROW))  &trans   &kp LG(LS(NUMBER_4))       &trans  &trans                &trans  &trans  &trans                 &trans
-&trans          &trans                  &trans          &trans                   &trans   &trans                     &trans  &trans                                                       &kp DEL
-            >;
-
-            sensor-bindings = <&inc_dec_kp LC(PAGE_UP) LC(PAGE_DOWN)>;
         };
 
         MOUSE {
@@ -167,16 +179,15 @@
             >;
         };
 
-        /* Windows 差分オーバーレイ: OSで違うキーだけ上書き。&trans は Mac ベースが透けて見える */
-        WIN_OVL {
+        ARROW_MAC {
             bindings = <
-&trans  &trans          &trans        &trans              &trans                                                       &trans      &trans  &trans  &trans  &trans
-&trans  &trans          &trans        &trans              &trans              &kp LC(C)                    &trans      &trans      &trans  &trans  &trans  &trans
-&trans  &trans          &trans        &trans              &trans              &kp LG(H)                    &kp LC(V)   &trans      &trans  &trans  &trans  &trans
-&trans  &kp LEFT_CONTROL &trans       &kp LG(LC(LEFT))    &kp LG(LC(RIGHT))   &lt 7 INT_MUHENKAN           &trans      &trans                              &kp INT_HENKAN
+&kp ESCAPE      &kp LC(LS(TAB))         &kp UP_ARROW    &kp LC(TAB)              &kp LG(W)                                  &trans  &trans                &trans  &trans                 &trans
+&kp HOME        &kp LEFT_ARROW          &kp DOWN_ARROW  &kp RIGHT_ARROW          &kp END  &kp LC(LG(LS(NUMBER_4)))   &trans  &kp LG(LEFT_BRACKET)  &trans  &trans  &kp LG(RIGHT_BRACKET)  &trans
+&kp LEFT_SHIFT  &kp LG(LS(LEFT_ARROW))  &trans          &kp LG(LS(RIGHT_ARROW))  &trans   &kp LG(LS(NUMBER_4))       &trans  &trans                &trans  &trans  &trans                 &trans
+&trans          &trans                  &trans          &trans                   &trans   &trans                     &trans  &trans                                                       &kp DEL
             >;
 
-            sensor-bindings = <&inc_dec_kp UP DOWN>;
+            sensor-bindings = <&inc_dec_kp LC(PAGE_UP) LC(PAGE_DOWN)>;
         };
 
         ARROW_WIN {
