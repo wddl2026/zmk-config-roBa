@@ -21,7 +21,8 @@
  * └──────────────────────────────────────────────┘
  *
  * OS切替: Enter長押し（FUNCTION）→（左手）A = Windows へ / S = Mac へ
- * コピー/ペーストは X+C / V+B のコンボ。OSに応じて ⌘C/⌘V か Ctrl+C/Ctrl+V を自動送出。
+ * コピー/ペースト: 左親指の修飾キー（Mac=⌘ / Win=Ctrl に自動で変わる）＋ C / V
+ * ※ 内側の2箇所（左=ダイヤル位置 / 右=トラックボール位置）は物理キーが無いので &none
  * ※ Windows 側の IME は「無変換=IMEオフ / 変換=IMEオン」に設定推奨（Microsoft IME）。
  */
 
@@ -59,29 +60,13 @@
             key-positions = <0 1>;
         };
 
-        // コピー = X+C。Mac(層0)=⌘C / Windows(層1)=Ctrl+C を自動で送り分け
-        copy_mac {
-            bindings = <&kp LG(C)>;
-            key-positions = <23 24>;
-            layers = <0>;
-        };
-        copy_win {
-            bindings = <&kp LC(C)>;
-            key-positions = <23 24>;
-            layers = <1>;
-        };
-
-        // ペースト = V+B。Mac(層0)=⌘V / Windows(層1)=Ctrl+V
-        paste_mac {
-            bindings = <&kp LG(V)>;
-            key-positions = <25 26>;
-            layers = <0>;
-        };
-        paste_win {
-            bindings = <&kp LC(V)>;
-            key-positions = <25 26>;
-            layers = <1>;
-        };
+        /*
+         * コピー/ペーストはコンボにしない。
+         * ZMK の &to はレイヤー0を常時有効のまま残す仕様のため、
+         * layers= でOS別に分けたコンボは Windows モードで両方有効になり競合する。
+         * → 左親指の修飾キー（Mac=⌘ / Win=Ctrl に自動で変わる）＋ C / V を使う。
+         *   これは修飾キーの押下そのものなので、どちらのOSでも確実に動く。
+         */
 
         double_quotation {
             bindings = <&kp DOUBLE_QUOTES>;
@@ -120,8 +105,8 @@
         MAC_BASE {
             bindings = <
 &kp Q             &kp W         &kp E         &kp R                     &kp T                                                       &kp Y          &kp U        &lt 5 I    &kp O    &kp P
-&kp A             &kp S         &kp D         &kp F                     &kp G        &kp LG(C)                       &kp MINUS      &kp H          &kp J        &kp K      &kp L    &kp SQT
-&mt LEFT_SHIFT Z  &kp X         &kp C         &kp V                     &kp B        &kp LC(LA(A))                   &kp LG(V)      &kp N          &kp M        &kp COMMA  &kp DOT  &kp SLASH
+&kp A             &kp S         &kp D         &kp F                     &kp G        &none                           &kp MINUS      &kp H          &kp J        &kp K      &kp L    &kp SQT
+&mt LEFT_SHIFT Z  &kp X         &kp C         &kp V                     &kp B        &kp LC(LA(A))                   &none          &kp N          &kp M        &kp COMMA  &kp DOT  &kp SLASH
 &lt 3 SPACE       &kp LEFT_WIN  &kp LEFT_ALT  &kp LC(LEFT_ARROW)        &kp LC(RIGHT_ARROW)      &lt_to_layer_0 6 LANG2      &kp BACKSPACE  &lt 2 ENTER                                      &kp LANG1
             >;
 
@@ -131,8 +116,8 @@
         WIN_BASE {
             bindings = <
 &kp Q             &kp W         &kp E         &kp R                     &kp T                                                       &kp Y          &kp U        &lt 5 I    &kp O    &kp P
-&kp A             &kp S         &kp D         &kp F                     &kp G        &kp LC(C)                       &kp MINUS      &kp H          &kp J        &kp K      &kp L    &kp SQT
-&mt LEFT_SHIFT Z  &kp X         &kp C         &kp V                     &kp B        &kp LG(H)                       &kp LC(V)      &kp N          &kp M        &kp COMMA  &kp DOT  &kp SLASH
+&kp A             &kp S         &kp D         &kp F                     &kp G        &none                           &kp MINUS      &kp H          &kp J        &kp K      &kp L    &kp SQT
+&mt LEFT_SHIFT Z  &kp X         &kp C         &kp V                     &kp B        &kp LG(H)                       &none          &kp N          &kp M        &kp COMMA  &kp DOT  &kp SLASH
 &lt 3 SPACE       &kp LEFT_CONTROL &kp LEFT_ALT &kp LG(LC(LEFT_ARROW)) &kp LG(LC(RIGHT_ARROW))  &lt 7 INT_MUHENKAN          &kp BACKSPACE  &lt 2 ENTER                                      &kp INT_HENKAN
             >;
 
