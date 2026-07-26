@@ -4,10 +4,7 @@
 #include <dt-bindings/zmk/pointing.h>
 
 /*
- * roBa キーマップ — Mac / Windows 両対応版（ベース切替式）
- *
- * Mac と Windows を「別々のベースレイヤー」で持ち、OS切替で排他的に切り替える。
- * これによりコピペ等のコンボが OS ごとに正しい修飾キー（⌘ / Ctrl）で発火する。
+ * roBa キーマップ — Mac / Windows 両対応版（ベース切替式）＋ Excel レイヤー
  *
  * ┌ レイヤー一覧 ──────────────────────────────────┐
  * │ 0 MAC_BASE   … Mac ベース（デフォルト）          │
@@ -18,12 +15,16 @@
  * │ 5 SCROLL     … スクロール（共通）                │
  * │ 6 ARROW_MAC  … 移動・編集 Mac版（英数長押し）     │
  * │ 7 ARROW_WIN  … 移動・編集 Win版（無変換長押し）   │
+ * │ 8 EXCEL      … Excelショートカット（「ー」長押し）│
  * └──────────────────────────────────────────────┘
  *
  * OS切替: Enter長押し（FUNCTION）→（左手）A = Windows へ / S = Mac へ
  * コピー/ペースト: 左親指の修飾キー（Mac=⌘ / Win=Ctrl に自動で変わる）＋ C / V
- * ※ 内側の2箇所（左=ダイヤル位置 / 右=トラックボール位置）は物理キーが無いので &none
+ * Excel: 右手の「ー」キーを長押し → 左手がExcelショートカットのコマンドパッドになる
+ *
+ * ※ 物理キーが無い2箇所は &none（キー位置15＝左内側上＝ダイヤル / 位置28＝右内側下＝トラックボール）
  * ※ Windows 側の IME は「無変換=IMEオフ / 変換=IMEオン」に設定推奨（Microsoft IME）。
+ * ※ Excelレイヤーのリボン系（ピボット等）は Windows版Excel 専用。
  */
 
 &mt {
@@ -65,7 +66,6 @@
          * ZMK の &to はレイヤー0を常時有効のまま残す仕様のため、
          * layers= でOS別に分けたコンボは Windows モードで両方有効になり競合する。
          * → 左親指の修飾キー（Mac=⌘ / Win=Ctrl に自動で変わる）＋ C / V を使う。
-         *   これは修飾キーの押下そのものなので、どちらのOSでも確実に動く。
          */
 
         double_quotation {
@@ -86,6 +86,52 @@
             bindings = <&to 0 &macro_param_1to1 &kp MACRO_PLACEHOLDER>;
             label = "TO_LAYER_0";
         };
+
+        /* Windows版Excel のリボン順次押しショートカット */
+        xl_pivot: xl_pivot {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&kp LA(D) &kp P>;
+            label = "XL_PIVOT";
+            wait-ms = <40>;
+            tap-ms = <40>;
+        };
+
+        xl_freeze: xl_freeze {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&kp LA(W) &kp F &kp F>;
+            label = "XL_FREEZE";
+            wait-ms = <40>;
+            tap-ms = <40>;
+        };
+
+        xl_clear: xl_clear {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&kp LA(H) &kp E &kp A>;
+            label = "XL_CLEAR";
+            wait-ms = <40>;
+            tap-ms = <40>;
+        };
+
+        xl_colfit: xl_colfit {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&kp LA(O) &kp C &kp A>;
+            label = "XL_COLFIT";
+            wait-ms = <40>;
+            tap-ms = <40>;
+        };
+
+        xl_rowfit: xl_rowfit {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&kp LA(O) &kp R &kp A>;
+            label = "XL_ROWFIT";
+            wait-ms = <40>;
+            tap-ms = <40>;
+        };
     };
 
     behaviors {
@@ -105,7 +151,7 @@
         MAC_BASE {
             bindings = <
 &kp Q             &kp W         &kp E         &kp R                     &kp T                                                       &kp Y          &kp U        &lt 5 I    &kp O    &kp P
-&kp A             &kp S         &kp D         &kp F                     &kp G        &none                           &kp MINUS      &kp H          &kp J        &kp K      &kp L    &kp SQT
+&kp A             &kp S         &kp D         &kp F                     &kp G        &none                           &lt 8 MINUS    &kp H          &kp J        &kp K      &kp L    &kp SQT
 &mt LEFT_SHIFT Z  &kp X         &kp C         &kp V                     &kp B        &kp LC(LA(A))                   &none          &kp N          &kp M        &kp COMMA  &kp DOT  &kp SLASH
 &lt 3 SPACE       &kp LEFT_WIN  &kp LEFT_ALT  &kp LC(LEFT_ARROW)        &kp LC(RIGHT_ARROW)      &lt_to_layer_0 6 LANG2      &kp BACKSPACE  &lt 2 ENTER                                      &kp LANG1
             >;
@@ -116,7 +162,7 @@
         WIN_BASE {
             bindings = <
 &kp Q             &kp W         &kp E         &kp R                     &kp T                                                       &kp Y          &kp U        &lt 5 I    &kp O    &kp P
-&kp A             &kp S         &kp D         &kp F                     &kp G        &none                           &kp MINUS      &kp H          &kp J        &kp K      &kp L    &kp SQT
+&kp A             &kp S         &kp D         &kp F                     &kp G        &none                           &lt 8 MINUS    &kp H          &kp J        &kp K      &kp L    &kp SQT
 &mt LEFT_SHIFT Z  &kp X         &kp C         &kp V                     &kp B        &kp LG(H)                       &none          &kp N          &kp M        &kp COMMA  &kp DOT  &kp SLASH
 &lt 3 SPACE       &kp LEFT_CONTROL &kp LEFT_ALT &kp LG(LC(LEFT_ARROW)) &kp LG(LC(RIGHT_ARROW))  &lt 7 INT_MUHENKAN          &kp BACKSPACE  &lt 2 ENTER                                      &kp INT_HENKAN
             >;
@@ -127,8 +173,8 @@
         FUNCTION {
             bindings = <
 &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2   &bt BT_SEL 3  &bt BT_SEL 4                        &kp F1   &kp F2  &kp F3  &kp F4  &kp F5
-&to 1         &to 0         &trans         &trans        &trans  &trans          &kp F13      &kp F6   &kp F7  &kp F8  &kp F9  &kp F10
-&bootloader   &bt BT_CLR    &bt BT_CLR_ALL &trans        &trans  &trans          &trans       &trans   &trans  &trans  &trans  &kp F11
+&to 1         &to 0         &trans         &trans        &trans  &none           &kp F13      &kp F6   &kp F7  &kp F8  &kp F9  &kp F10
+&bootloader   &bt BT_CLR    &bt BT_CLR_ALL &trans        &trans  &trans          &none        &trans   &trans  &trans  &trans  &kp F11
 &trans        &trans        &trans         &trans        &trans  &trans          &trans       &trans                           &kp F12
             >;
 
@@ -137,18 +183,18 @@
 
         NUM {
             bindings = <
-&kp MINUS                   &kp KP_NUMBER_7  &kp KP_NUMBER_8  &kp KP_NUMBER_9  &kp PLUS                                                   &kp CARET         &kp AMPERSAND      &kp TILDE       &kp LEFT_PARENTHESIS  &kp RIGHT_PARENTHESIS
-&kp SLASH                   &kp KP_NUMBER_4  &kp KP_NUMBER_5  &kp KP_NUMBER_6  &kp ASTERISK  &kp LC(LA(KP_NUMBER_0))      &kp UNDERSCORE  &kp EXCLAMATION   &kp AT_SIGN        &kp HASH        &kp DOLLAR            &kp PERCENT
-&mt LEFT_SHIFT KP_NUMBER_0  &kp KP_NUMBER_1  &kp KP_NUMBER_2  &kp KP_NUMBER_3  &kp PERIOD    &kp EQUAL                    &kp SEMICOLON   &kp LEFT_BRACKET  &kp RIGHT_BRACKET  &kp LEFT_BRACE  &kp RIGHT_BRACE       &kp BACKSLASH
-&trans                      &trans           &trans           &trans           &trans        &trans                       &trans          &trans                                                                     &kp PIPE
+&kp MINUS                   &kp KP_NUMBER_7  &kp KP_NUMBER_8  &kp KP_NUMBER_9  &kp PLUS                                                &kp CARET         &kp AMPERSAND      &kp TILDE       &kp LEFT_PARENTHESIS  &kp RIGHT_PARENTHESIS
+&kp SLASH                   &kp KP_NUMBER_4  &kp KP_NUMBER_5  &kp KP_NUMBER_6  &kp ASTERISK  &none           &kp UNDERSCORE  &kp EXCLAMATION   &kp AT_SIGN        &kp HASH        &kp DOLLAR            &kp PERCENT
+&mt LEFT_SHIFT KP_NUMBER_0  &kp KP_NUMBER_1  &kp KP_NUMBER_2  &kp KP_NUMBER_3  &kp PERIOD    &kp SEMICOLON   &none           &kp LEFT_BRACKET  &kp RIGHT_BRACKET  &kp LEFT_BRACE  &kp RIGHT_BRACE       &kp BACKSLASH
+&trans                      &trans           &trans           &trans           &trans        &trans          &trans          &trans                                                                     &kp PIPE
             >;
         };
 
         MOUSE {
             bindings = <
 &trans  &trans  &trans  &trans  &trans                      &trans  &trans    &trans    &trans    &trans
-&trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &mkp MB1  &mkp MB3  &mkp MB2  &trans
-&trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &lt 5 M   &trans    &trans    &trans
+&trans  &trans  &trans  &trans  &trans  &none       &trans  &trans  &mkp MB1  &mkp MB3  &mkp MB2  &trans
+&trans  &trans  &trans  &trans  &trans  &trans      &none   &trans  &lt 5 M   &trans    &trans    &trans
 &trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans                                &trans
             >;
 
@@ -158,29 +204,47 @@
         SCROLL {
             bindings = <
 &trans  &trans  &trans  &trans  &trans                      &trans  &trans  &trans  &trans  &trans
-&trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &trans  &trans  &trans  &trans
-&trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &none       &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans      &none   &trans  &trans  &trans  &trans  &trans
 &trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans                          &trans
             >;
         };
 
+        /* 右手 YUIO = ⌘+矢印（Excelでセルの切れ目までジャンプ） */
         ARROW_MAC {
             bindings = <
-&kp ESCAPE      &kp LC(LS(TAB))         &kp UP_ARROW    &kp LC(TAB)              &kp LG(W)                                  &trans  &trans                &trans  &trans                 &trans
-&kp HOME        &kp LEFT_ARROW          &kp DOWN_ARROW  &kp RIGHT_ARROW          &kp END  &kp LC(LG(LS(NUMBER_4)))   &trans  &kp LG(LEFT_BRACKET)  &trans  &trans  &kp LG(RIGHT_BRACKET)  &trans
-&kp LEFT_SHIFT  &kp LG(LS(LEFT_ARROW))  &trans          &kp LG(LS(RIGHT_ARROW))  &trans   &kp LG(LS(NUMBER_4))       &trans  &trans                &trans  &trans  &trans                 &trans
-&trans          &trans                  &trans          &trans                   &trans   &trans                     &trans  &trans                                                       &kp DEL
+&kp ESCAPE      &kp LC(LS(TAB))         &kp UP_ARROW    &kp LC(TAB)              &kp LG(W)                                      &kp LG(LEFT_ARROW)  &kp LG(DOWN_ARROW)  &kp LG(UP_ARROW)  &kp LG(RIGHT_ARROW)  &trans
+&kp HOME        &kp LEFT_ARROW          &kp DOWN_ARROW  &kp RIGHT_ARROW          &kp END       &none                     &trans  &kp LG(LEFT_BRACKET)  &trans  &trans  &kp LG(RIGHT_BRACKET)  &trans
+&kp LEFT_SHIFT  &kp LG(LS(LEFT_ARROW))  &kp LG(LS(NUMBER_4))  &kp LG(LS(RIGHT_ARROW))  &trans  &kp LC(LG(LS(NUMBER_4)))  &none   &trans                &trans  &trans  &trans                 &trans
+&trans          &trans                  &trans          &trans                   &trans        &trans                    &trans  &trans                                                       &kp DEL
             >;
 
             sensor-bindings = <&inc_dec_kp LC(PAGE_UP) LC(PAGE_DOWN)>;
         };
 
+        /* 右手 YUIO = Ctrl+矢印（Excelでセルの切れ目までジャンプ） */
         ARROW_WIN {
             bindings = <
-&kp ESCAPE      &kp LC(LS(TAB))         &kp UP_ARROW    &kp LC(TAB)              &kp LC(W)                                  &trans  &trans          &trans  &trans          &trans
-&kp HOME        &kp LEFT_ARROW          &kp DOWN_ARROW  &kp RIGHT_ARROW          &kp END  &kp LG(LS(S))              &trans  &kp LA(LEFT_ARROW)  &trans  &trans  &kp LA(RIGHT_ARROW)  &trans
-&kp LEFT_SHIFT  &kp LC(LS(LEFT_ARROW))  &trans          &kp LC(LS(RIGHT_ARROW))  &trans   &kp LG(PRINTSCREEN)        &trans  &trans          &trans  &trans  &trans          &trans
-&trans          &trans                  &trans          &trans                   &trans   &trans                     &trans  &trans                                          &kp DEL
+&kp ESCAPE      &kp LC(LS(TAB))         &kp UP_ARROW    &kp LC(TAB)              &kp LC(W)                                      &kp LC(LEFT_ARROW)  &kp LC(DOWN_ARROW)  &kp LC(UP_ARROW)  &kp LC(RIGHT_ARROW)  &trans
+&kp HOME        &kp LEFT_ARROW          &kp DOWN_ARROW  &kp RIGHT_ARROW          &kp END       &none                &trans  &kp LA(LEFT_ARROW)  &trans  &trans  &kp LA(RIGHT_ARROW)  &trans
+&kp LEFT_SHIFT  &kp LC(LS(LEFT_ARROW))  &kp LG(PRINTSCREEN)  &kp LC(LS(RIGHT_ARROW))  &trans   &kp LG(LS(S))        &none   &trans              &trans  &trans  &trans               &trans
+&trans          &trans                  &trans          &trans                   &trans        &trans               &trans  &trans                                                   &kp DEL
+            >;
+
+            sensor-bindings = <&inc_dec_kp LC(PAGE_UP) LC(PAGE_DOWN)>;
+        };
+
+        /*
+         * EXCEL レイヤー（「ー」キー長押し中）
+         * 右手で「ー」を押さえたまま、左手だけでExcelの主要ショートカットを叩く。
+         * リボン順次押し（ピボット・ウィンドウ固定・クリア・幅最適化）はマクロ化。
+         */
+        EXCEL {
+            bindings = <
+&kp F2          &kp F4           &kp LC(NUMBER_1)  &kp LC(LS(L))     &kp LC(LA(V))                             &trans  &trans  &trans  &trans  &trans
+&kp LC(F)       &kp LC(H)        &kp LS(SPACE)     &kp LC(SPACE)     &kp LA(ENTER)   &none          &trans     &trans  &trans  &trans  &trans  &trans
+&kp LC(LS(EQUAL)) &kp LC(MINUS)  &kp LC(ENTER)     &kp LC(PAGE_UP)   &kp LC(PAGE_DOWN) &xl_pivot    &none      &trans  &trans  &trans  &trans  &trans
+&xl_freeze      &xl_clear        &xl_colfit        &xl_rowfit        &trans          &trans         &trans     &trans                          &trans
             >;
 
             sensor-bindings = <&inc_dec_kp LC(PAGE_UP) LC(PAGE_DOWN)>;
