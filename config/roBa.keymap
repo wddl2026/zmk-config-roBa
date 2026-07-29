@@ -164,7 +164,7 @@
 &kp Q             &kp W         &kp E         &kp R                     &kp T                                                       &kp Y          &kp U        &lt 5 I    &kp O    &kp P
 &kp A             &kp S         &kp D         &kp F                     &kp G        &none                           &lt 8 MINUS    &kp H          &kp J        &kp K      &kp L    &kp SQT
 &mt LEFT_SHIFT Z  &kp X         &kp C         &kp V                     &kp B        &kp LG(H)                       &none          &kp N          &kp M        &kp COMMA  &kp DOT  &kp SLASH
-&lt 3 SPACE       &kp LEFT_CONTROL &kp LEFT_ALT &kp LG(LC(LEFT_ARROW)) &kp LG(LC(RIGHT_ARROW))  &lt 7 INT_MUHENKAN          &kp BACKSPACE  &lt 2 ENTER                                      &kp INT_HENKAN
+&lt 3 SPACE       &kp LEFT_CONTROL &kp LEFT_ALT &kp LA(LS(TAB))        &kp LA(TAB)              &lt 7 INT_MUHENKAN          &kp BACKSPACE  &lt 2 ENTER                                      &kp INT_HENKAN
             >;
 
             sensor-bindings = <&inc_dec_kp UP DOWN>;
@@ -227,7 +227,7 @@
             bindings = <
 &kp ESCAPE      &kp LC(LS(TAB))         &kp UP_ARROW    &kp LC(TAB)              &kp LC(W)                                      &kp LC(LEFT_ARROW)  &kp LC(DOWN_ARROW)  &kp LC(UP_ARROW)  &kp LC(RIGHT_ARROW)  &trans
 &kp HOME        &kp LEFT_ARROW          &kp DOWN_ARROW  &kp RIGHT_ARROW          &kp END       &none                &trans  &kp LA(LEFT_ARROW)  &trans  &trans  &kp LA(RIGHT_ARROW)  &trans
-&kp LEFT_SHIFT  &kp LC(LS(LEFT_ARROW))  &kp LG(PRINTSCREEN)  &kp LC(LS(RIGHT_ARROW))  &trans   &kp LG(LS(S))        &none   &trans              &trans  &trans  &trans               &trans
+&kp LEFT_SHIFT  &kp LC(LS(LEFT_ARROW))  &kp LG(PRINTSCREEN)  &kp LC(LS(RIGHT_ARROW))  &trans   &kp LG(LS(S))        &none   &trans              &kp LG(LC(LEFT_ARROW))  &kp LG(LC(RIGHT_ARROW))  &trans               &trans
 &trans          &trans                  &trans          &trans                   &trans        &trans               &trans  &trans                                                   &kp DEL
             >;
 
