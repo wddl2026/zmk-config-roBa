@@ -23,8 +23,16 @@
  * Excel: 右手の「ー」キーを長押し → 左手がExcelショートカットのコマンドパッドになる
  *
  * ※ 物理キーが無いのは位置15（左内側の上＝ダイヤルの場所）だけ。ここは全レイヤーで &none。
- *   位置28（右内側の下＝トラックボール脇）は実在するキーなので、かな/変換を割り当てている。
- * ※ 押しにくい最右下（位置42）は使用頻度の低い Del に変更。かな は位置28へ移動。
+ *
+ * クリックで文字が誤入力される問題への対策:
+ *   トラックボール脇（位置28）＝ 左クリック、最右下（位置42）＝ 右クリック を
+ *   ベースレイヤーに常設。マウスレイヤーの状態に関係なく必ずクリックになり、
+ *   文字が打たれることがない。J/K/L のクリック（マウスレイヤー）も併存。
+ *   あわせて automouse のタイムアウトを 700ms → 2500ms に延長（roBa_R.conf）。
+ *
+ * ※ かな/変換 は左親指の英数の隣（位置38）へ移動。英数と隣り合いJIS配列と同じ並び。
+ *   画面/ウィンドウ切替は「順方向」を位置37に残し、逆方向は矢印レイヤーの同じキーへ。
+ *   Del は矢印レイヤーの最右下。
  * ※ Windows 側の IME は「無変換=IMEオフ / 変換=IMEオン」に設定推奨（Microsoft IME）。
  * ※ Excelレイヤーのリボン系（ピボット等）は Windows版Excel 専用。
  */
@@ -154,8 +162,8 @@
             bindings = <
 &kp Q             &kp W         &kp E         &kp R                     &kp T                                                       &kp Y          &kp U        &lt 5 I    &kp O    &kp P
 &kp A             &kp S         &kp D         &kp F                     &kp G        &none                           &lt 8 MINUS    &kp H          &kp J        &kp K      &kp L    &kp SQT
-&mt LEFT_SHIFT Z  &kp X         &kp C         &kp V                     &kp B        &kp LC(LA(A))                   &kp LANG1      &kp N          &kp M        &kp COMMA  &kp DOT  &kp SLASH
-&lt 3 SPACE       &kp LEFT_WIN  &kp LEFT_ALT  &kp LC(LEFT_ARROW)        &kp LC(RIGHT_ARROW)      &lt_to_layer_0 6 LANG2      &kp BACKSPACE  &lt 2 ENTER                                      &kp DEL
+&mt LEFT_SHIFT Z  &kp X         &kp C         &kp V                     &kp B        &kp LC(LA(A))                   &mkp MB1       &kp N          &kp M        &kp COMMA  &kp DOT  &kp SLASH
+&lt 3 SPACE       &kp LEFT_WIN  &kp LEFT_ALT  &kp LC(RIGHT_ARROW)       &kp LANG1                &lt_to_layer_0 6 LANG2      &kp BACKSPACE  &lt 2 ENTER                                      &mkp MB2
             >;
 
             sensor-bindings = <&inc_dec_kp UP DOWN>;
@@ -165,8 +173,8 @@
             bindings = <
 &kp Q             &kp W         &kp E         &kp R                     &kp T                                                       &kp Y          &kp U        &lt 5 I    &kp O    &kp P
 &kp A             &kp S         &kp D         &kp F                     &kp G        &none                           &lt 8 MINUS    &kp H          &kp J        &kp K      &kp L    &kp SQT
-&mt LEFT_SHIFT Z  &kp X         &kp C         &kp V                     &kp B        &kp LG(H)                       &kp INT_HENKAN &kp N          &kp M        &kp COMMA  &kp DOT  &kp SLASH
-&lt 3 SPACE       &kp LEFT_CONTROL &kp LEFT_ALT &kp LA(LS(TAB))        &kp LA(TAB)              &lt 7 INT_MUHENKAN          &kp BACKSPACE  &lt 2 ENTER                                      &kp DEL
+&mt LEFT_SHIFT Z  &kp X         &kp C         &kp V                     &kp B        &kp LG(H)                       &mkp MB1       &kp N          &kp M        &kp COMMA  &kp DOT  &kp SLASH
+&lt 3 SPACE       &kp LEFT_CONTROL &kp LEFT_ALT &kp LA(TAB)            &kp INT_HENKAN           &lt 7 INT_MUHENKAN          &kp BACKSPACE  &lt 2 ENTER                                      &mkp MB2
             >;
 
             sensor-bindings = <&inc_dec_kp UP DOWN>;
@@ -218,7 +226,7 @@
 &kp ESCAPE      &kp LC(LS(TAB))         &kp UP_ARROW    &kp LC(TAB)              &kp LG(W)                                      &kp LG(LEFT_ARROW)  &kp LG(DOWN_ARROW)  &kp LG(UP_ARROW)  &kp LG(RIGHT_ARROW)  &trans
 &kp HOME        &kp LEFT_ARROW          &kp DOWN_ARROW  &kp RIGHT_ARROW          &kp END       &none                     &trans  &kp LG(LEFT_BRACKET)  &trans  &trans  &kp LG(RIGHT_BRACKET)  &trans
 &kp LEFT_SHIFT  &kp LG(LS(LEFT_ARROW))  &kp LG(LS(NUMBER_4))  &kp LG(LS(RIGHT_ARROW))  &trans  &kp LC(LG(LS(NUMBER_4)))  &trans  &trans                &trans  &trans  &trans                 &trans
-&trans          &trans                  &trans          &trans                   &trans        &trans                    &trans  &trans                                                       &trans
+&trans          &trans                  &trans          &kp LC(LEFT_ARROW)       &trans        &trans                    &trans  &trans                                                       &kp DEL
             >;
 
             sensor-bindings = <&inc_dec_kp LC(PAGE_UP) LC(PAGE_DOWN)>;
@@ -230,7 +238,7 @@
 &kp ESCAPE      &kp LC(LS(TAB))         &kp UP_ARROW    &kp LC(TAB)              &kp LC(W)                                      &kp LC(LEFT_ARROW)  &kp LC(DOWN_ARROW)  &kp LC(UP_ARROW)  &kp LC(RIGHT_ARROW)  &trans
 &kp HOME        &kp LEFT_ARROW          &kp DOWN_ARROW  &kp RIGHT_ARROW          &kp END       &none                &trans  &kp LA(LEFT_ARROW)  &trans  &trans  &kp LA(RIGHT_ARROW)  &trans
 &kp LEFT_SHIFT  &kp LC(LS(LEFT_ARROW))  &kp LG(PRINTSCREEN)  &kp LC(LS(RIGHT_ARROW))  &trans   &kp LG(LS(S))        &trans  &trans              &kp LG(LC(LEFT_ARROW))  &kp LG(LC(RIGHT_ARROW))  &trans               &trans
-&trans          &trans                  &trans          &trans                   &trans        &trans               &trans  &trans                                                   &trans
+&trans          &trans                  &trans          &kp LA(LS(TAB))          &trans        &trans               &trans  &trans                                                   &kp DEL
             >;
 
             sensor-bindings = <&inc_dec_kp LC(PAGE_UP) LC(PAGE_DOWN)>;
