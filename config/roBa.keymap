@@ -42,6 +42,16 @@
     quick-tap-ms = <0>;
 };
 
+/*
+ * レイヤーキー（Space/英数/Enter/ー の長押し）の判定を緩める。
+ * 既定の tap-preferred は「200ms 待ってから次のキー」でないとレイヤーに入らず、
+ * 通常のタイプ速度では取りこぼす。balanced なら押しながら次のキーを押せば入る。
+ */
+&lt {
+    flavor = "balanced";
+    quick-tap-ms = <175>;
+};
+
 &trackball {
     automouse-layer = <4>;
     scroll-layers = <5>;
@@ -152,6 +162,8 @@
 
             #binding-cells = <2>;
             tapping-term-ms = <200>;
+            flavor = "balanced";
+            quick-tap-ms = <175>;
         };
     };
 
