@@ -32,7 +32,7 @@
  *   あわせて automouse のタイムアウトを 700ms → 2500ms に延長（roBa_R.conf）。
  *
  * ※ かな/変換 は左親指の英数の隣（位置38）へ移動。英数と隣り合いJIS配列と同じ並び。
- *   画面/ウィンドウ切替は「順方向」を位置37に残し、逆方向は矢印レイヤーの同じキーへ。
+ *   画面/ウィンドウ切替（位置37）は1キーで両方向: タップ=次へ / 長押し=前へ。
  *   Del は矢印レイヤーの最右下。
  * ※ Windows 側の IME は「無変換=IMEオフ / 変換=IMEオン」に設定推奨（Microsoft IME）。
  * ※ Excelレイヤーのリボン系（ピボット等）は Windows版Excel 専用。
@@ -156,6 +156,17 @@
     };
 
     behaviors {
+        /* 画面・ウィンドウ切替: タップ=次へ / 長押し=前へ（1キーで両方向） */
+        win_sw: win_sw {
+            compatible = "zmk,behavior-hold-tap";
+            label = "WIN_SWITCH";
+            bindings = <&kp>, <&kp>;
+
+            #binding-cells = <2>;
+            tapping-term-ms = <200>;
+            flavor = "tap-preferred";
+        };
+
         lt_to_layer_0: lt_to_layer_0 {
             compatible = "zmk,behavior-hold-tap";
             label = "LAYER_TAP_TO_0";
@@ -176,7 +187,7 @@
 &kp Q             &kp W         &kp E         &kp R                     &kp T                                                       &kp Y          &kp U        &lt 5 I    &kp O    &kp P
 &kp A             &kp S         &kp D         &kp F                     &kp G        &none                           &lt 8 MINUS    &kp H          &kp J        &kp K      &kp L    &kp SQT
 &mt LEFT_SHIFT Z  &kp X         &kp C         &kp V                     &kp B        &kp LC(LA(A))                   &mkp MB1       &kp N          &kp M        &kp COMMA  &kp DOT  &kp SLASH
-&lt 3 SPACE       &kp LEFT_WIN  &kp LEFT_ALT  &kp LC(RIGHT_ARROW)       &kp LANG1                &lt_to_layer_0 6 LANG2      &kp BACKSPACE  &lt 2 ENTER                                      &mkp MB2
+&lt 3 SPACE       &kp LEFT_WIN  &kp LEFT_ALT  &win_sw LC(LEFT_ARROW) LC(RIGHT_ARROW)  &kp LANG1                &lt_to_layer_0 6 LANG2      &kp BACKSPACE  &lt 2 ENTER                                      &mkp MB2
             >;
 
             sensor-bindings = <&inc_dec_kp UP DOWN>;
@@ -187,7 +198,7 @@
 &kp Q             &kp W         &kp E         &kp R                     &kp T                                                       &kp Y          &kp U        &lt 5 I    &kp O    &kp P
 &kp A             &kp S         &kp D         &kp F                     &kp G        &none                           &lt 8 MINUS    &kp H          &kp J        &kp K      &kp L    &kp SQT
 &mt LEFT_SHIFT Z  &kp X         &kp C         &kp V                     &kp B        &kp LG(H)                       &mkp MB1       &kp N          &kp M        &kp COMMA  &kp DOT  &kp SLASH
-&lt 3 SPACE       &kp LEFT_CONTROL &kp LEFT_ALT &kp LA(TAB)            &kp INT_HENKAN           &lt 7 INT_MUHENKAN          &kp BACKSPACE  &lt 2 ENTER                                      &mkp MB2
+&lt 3 SPACE       &kp LEFT_CONTROL &kp LEFT_ALT &win_sw LA(LS(TAB)) LA(TAB)  &kp INT_HENKAN           &lt 7 INT_MUHENKAN          &kp BACKSPACE  &lt 2 ENTER                                      &mkp MB2
             >;
 
             sensor-bindings = <&inc_dec_kp UP DOWN>;
