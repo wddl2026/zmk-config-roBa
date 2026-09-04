@@ -18,7 +18,8 @@
  * │ 8 EXCEL      … Excelショートカット（「ー」長押し）│
  * └──────────────────────────────────────────────┘
  *
- * OS切替: Enter長押し（FUNCTION）→（左手）A = Windows へ / S = Mac へ
+ * OS切替: Enter長押し（FUNCTION）→（左手）A = Mac⇄Windows トグル（押すたびに切替）
+ *         S = 強制的に Mac へ戻す（状態が分からなくなった時の保険）
  * コピー/ペースト: 左親指の修飾キー（Mac=⌘ / Win=Ctrl に自動で変わる）＋ C / V
  * Excel: 右手の「ー」キーを長押し → 左手がExcelショートカットのコマンドパッドになる
  *
@@ -195,7 +196,7 @@
         FUNCTION {
             bindings = <
 &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2   &bt BT_SEL 3  &bt BT_SEL 4                        &kp F1   &kp F2  &kp F3  &kp F4  &kp F5
-&to 1         &to 0         &trans         &trans        &trans  &none           &kp F13      &kp F6   &kp F7  &kp F8  &kp F9  &kp F10
+&tog 1        &to 0         &trans         &trans        &trans  &none           &kp F13      &kp F6   &kp F7  &kp F8  &kp F9  &kp F10
 &bootloader   &bt BT_CLR    &bt BT_CLR_ALL &trans        &trans  &trans          &trans       &trans   &trans  &trans  &trans  &kp F11
 &trans        &trans        &trans         &trans        &trans  &trans          &trans       &trans                           &kp F12
             >;
