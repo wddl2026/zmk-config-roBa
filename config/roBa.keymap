@@ -4,38 +4,28 @@
 #include <dt-bindings/zmk/pointing.h>
 
 /*
- * roBa キーマップ — Mac / Windows 両対応版（ベース切替式）＋ Excel レイヤー
+ * roBa キーマップ — Mac 専用版
  *
- * ┌ レイヤー一覧 ──────────────────────────────────┐
- * │ 0 MAC_BASE   … Mac ベース（デフォルト）          │
- * │ 1 WIN_BASE   … Windows ベース                    │
- * │ 2 FUNCTION   … F1-F12＋Bluetooth＋OS切替（Enter長押し）│
- * │ 3 NUM        … 数字・記号（Space長押し／共通）    │
- * │ 4 MOUSE      … ボール操作で自動（共通）          │
- * │ 5 SCROLL     … スクロール（共通）                │
- * │ 6 ARROW_MAC  … 移動・編集 Mac版（英数長押し）     │
- * │ 7 ARROW_WIN  … 移動・編集 Win版（無変換長押し）   │
- * │ 8 EXCEL      … Excelショートカット（「ー」長押し）│
+ * ┌ レイヤー一覧 ────────────────────────────────┐
+ * │ 0 BASE      … 通常                            │
+ * │ 1 FUNCTION  … F1-F12＋Bluetooth（Enter長押し） │
+ * │ 2 NUM       … 数字・記号（Space長押し）        │
+ * │ 3 ARROW     … 移動・編集・スクショ（英数長押し） │
+ * │ 4 MOUSE     … ボール操作で自動                 │
+ * │ 5 SCROLL    … スクロール（I または M 長押し）   │
+ * │ 6 EXCEL     … Excelショートカット（「ー」長押し）│
  * └──────────────────────────────────────────────┘
  *
- * OS切替: Enter長押し（FUNCTION）→（左手）A = Mac⇄Windows トグル（押すたびに切替）
- *         S = 強制的に Mac へ戻す（状態が分からなくなった時の保険）
- * コピー/ペースト: 左親指の修飾キー（Mac=⌘ / Win=Ctrl に自動で変わる）＋ C / V
- * Excel: 右手の「ー」キーを長押し → 左手がExcelショートカットのコマンドパッドになる
+ * 親指（左）: [Space] [⌘] [⌥] [画面切替] [かな] [英数]
+ *   Space長押し=数字 / 英数長押し=矢印 / 画面切替はタップ=次・長押し=前
+ * 親指（右）: [⌫] [Enter] [右クリック]   Enter長押し=Fn
  *
- * ※ 物理キーが無いのは位置15（左内側の上＝ダイヤルの場所）だけ。ここは全レイヤーで &none。
+ * コピー/ペースト: 親指の ⌘ ＋ C / V
+ * クリック: トラックボール脇のキー=左クリック（常時）、最右下=右クリック（常時）
+ *           ボール操作中は J/K/L も 左/中/右クリック
+ * Aqua Voice: 左内側の下のキー（⌃⌥A）
  *
- * クリックで文字が誤入力される問題への対策:
- *   トラックボール脇（位置28）＝ 左クリック、最右下（位置42）＝ 右クリック を
- *   ベースレイヤーに常設。マウスレイヤーの状態に関係なく必ずクリックになり、
- *   文字が打たれることがない。J/K/L のクリック（マウスレイヤー）も併存。
- *   あわせて automouse のタイムアウトを 700ms → 2500ms に延長（roBa_R.conf）。
- *
- * ※ かな/変換 は左親指の英数の隣（位置38）へ移動。英数と隣り合いJIS配列と同じ並び。
- *   画面/ウィンドウ切替（位置37）は1キーで両方向: タップ=次へ / 長押し=前へ。
- *   Del は矢印レイヤーの最右下。
- * ※ Windows 側の IME は「無変換=IMEオフ / 変換=IMEオン」に設定推奨（Microsoft IME）。
- * ※ Excelレイヤーのリボン系（ピボット等）は Windows版Excel 専用。
+ * ※ 位置15（左内側の上）はダイヤルの場所で物理キーが無いため全レイヤーで &none
  */
 
 &mt {
@@ -43,11 +33,7 @@
     quick-tap-ms = <0>;
 };
 
-/*
- * レイヤーキー（Space/英数/Enter/ー の長押し）の判定を緩める。
- * 既定の tap-preferred は「200ms 待ってから次のキー」でないとレイヤーに入らず、
- * 通常のタイプ速度では取りこぼす。balanced なら押しながら次のキーを押せば入る。
- */
+/* レイヤーキーは押しながら次のキーを押せば即レイヤーに入る */
 &lt {
     flavor = "balanced";
     quick-tap-ms = <175>;
@@ -82,13 +68,6 @@
             key-positions = <0 1>;
         };
 
-        /*
-         * コピー/ペーストはコンボにしない。
-         * ZMK の &to はレイヤー0を常時有効のまま残す仕様のため、
-         * layers= でOS別に分けたコンボは Windows モードで両方有効になり競合する。
-         * → 左親指の修飾キー（Mac=⌘ / Win=Ctrl に自動で変わる）＋ C / V を使う。
-         */
-
         double_quotation {
             bindings = <&kp DOUBLE_QUOTES>;
             key-positions = <20 21>;
@@ -107,56 +86,10 @@
             bindings = <&to 0 &macro_param_1to1 &kp MACRO_PLACEHOLDER>;
             label = "TO_LAYER_0";
         };
-
-        /* Windows版Excel のリボン順次押しショートカット */
-        xl_pivot: xl_pivot {
-            compatible = "zmk,behavior-macro";
-            #binding-cells = <0>;
-            bindings = <&kp LA(D) &kp P>;
-            label = "XL_PIVOT";
-            wait-ms = <40>;
-            tap-ms = <40>;
-        };
-
-        xl_freeze: xl_freeze {
-            compatible = "zmk,behavior-macro";
-            #binding-cells = <0>;
-            bindings = <&kp LA(W) &kp F &kp F>;
-            label = "XL_FREEZE";
-            wait-ms = <40>;
-            tap-ms = <40>;
-        };
-
-        xl_clear: xl_clear {
-            compatible = "zmk,behavior-macro";
-            #binding-cells = <0>;
-            bindings = <&kp LA(H) &kp E &kp A>;
-            label = "XL_CLEAR";
-            wait-ms = <40>;
-            tap-ms = <40>;
-        };
-
-        xl_colfit: xl_colfit {
-            compatible = "zmk,behavior-macro";
-            #binding-cells = <0>;
-            bindings = <&kp LA(O) &kp C &kp A>;
-            label = "XL_COLFIT";
-            wait-ms = <40>;
-            tap-ms = <40>;
-        };
-
-        xl_rowfit: xl_rowfit {
-            compatible = "zmk,behavior-macro";
-            #binding-cells = <0>;
-            bindings = <&kp LA(O) &kp R &kp A>;
-            label = "XL_ROWFIT";
-            wait-ms = <40>;
-            tap-ms = <40>;
-        };
     };
 
     behaviors {
-        /* 画面・ウィンドウ切替: タップ=次へ / 長押し=前へ（1キーで両方向） */
+        /* 画面切替: タップ=次の画面(⌃→) / 長押し=前の画面(⌃←) */
         win_sw: win_sw {
             compatible = "zmk,behavior-hold-tap";
             label = "WIN_SWITCH";
@@ -182,23 +115,12 @@
     keymap {
         compatible = "zmk,keymap";
 
-        MAC_BASE {
+        BASE {
             bindings = <
-&kp Q             &kp W         &kp E         &kp R                     &kp T                                                       &kp Y          &kp U        &lt 5 I    &kp O    &kp P
-&kp A             &kp S         &kp D         &kp F                     &kp G        &none                           &lt 8 MINUS    &kp H          &kp J        &kp K      &kp L    &kp SQT
-&mt LEFT_SHIFT Z  &kp X         &kp C         &kp V                     &kp B        &kp LC(LA(A))                   &mkp MB1       &kp N          &kp M        &kp COMMA  &kp DOT  &kp SLASH
-&lt 3 SPACE       &kp LEFT_WIN  &kp LEFT_ALT  &win_sw LC(LEFT_ARROW) LC(RIGHT_ARROW)  &kp LANG1                &lt_to_layer_0 6 LANG2      &kp BACKSPACE  &lt 2 ENTER                                      &mkp MB2
-            >;
-
-            sensor-bindings = <&inc_dec_kp UP DOWN>;
-        };
-
-        WIN_BASE {
-            bindings = <
-&kp Q             &kp W         &kp E         &kp R                     &kp T                                                       &kp Y          &kp U        &lt 5 I    &kp O    &kp P
-&kp A             &kp S         &kp D         &kp F                     &kp G        &none                           &lt 8 MINUS    &kp H          &kp J        &kp K      &kp L    &kp SQT
-&mt LEFT_SHIFT Z  &kp X         &kp C         &kp V                     &kp B        &kp LG(H)                       &mkp MB1       &kp N          &kp M        &kp COMMA  &kp DOT  &kp SLASH
-&lt 3 SPACE       &kp LEFT_CONTROL &kp LEFT_ALT &win_sw LA(LS(TAB)) LA(TAB)  &kp INT_HENKAN           &lt 7 INT_MUHENKAN          &kp BACKSPACE  &lt 2 ENTER                                      &mkp MB2
+&kp Q             &kp W         &kp E         &kp R                                    &kp T                                            &kp Y          &kp U        &lt 5 I    &kp O    &kp P
+&kp A             &kp S         &kp D         &kp F                                    &kp G        &none                               &lt 6 MINUS    &kp H          &kp J        &kp K      &kp L    &kp SQT
+&mt LEFT_SHIFT Z  &kp X         &kp C         &kp V                                    &kp B        &kp LC(LA(A))                       &mkp MB1       &kp N          &kp M        &kp COMMA  &kp DOT  &kp SLASH
+&lt 2 SPACE       &kp LEFT_GUI  &kp LEFT_ALT  &win_sw LC(LEFT_ARROW) LC(RIGHT_ARROW)   &kp LANG1    &lt_to_layer_0 3 LANG2              &kp BACKSPACE  &lt 1 ENTER                                      &mkp MB2
             >;
 
             sensor-bindings = <&inc_dec_kp UP DOWN>;
@@ -207,7 +129,7 @@
         FUNCTION {
             bindings = <
 &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2   &bt BT_SEL 3  &bt BT_SEL 4                        &kp F1   &kp F2  &kp F3  &kp F4  &kp F5
-&tog 1        &to 0         &trans         &trans        &trans  &none           &kp F13      &kp F6   &kp F7  &kp F8  &kp F9  &kp F10
+&trans        &trans        &trans         &trans        &trans  &none           &kp F13      &kp F6   &kp F7  &kp F8  &kp F9  &kp F10
 &bootloader   &bt BT_CLR    &bt BT_CLR_ALL &trans        &trans  &trans          &trans       &trans   &trans  &trans  &trans  &kp F11
 &trans        &trans        &trans         &trans        &trans  &trans          &trans       &trans                           &kp F12
             >;
@@ -217,11 +139,23 @@
 
         NUM {
             bindings = <
-&kp MINUS                   &kp NUMBER_7  &kp NUMBER_8  &kp NUMBER_9  &kp PLUS                                                &kp CARET         &kp AMPERSAND      &kp TILDE       &kp LEFT_PARENTHESIS  &kp RIGHT_PARENTHESIS
-&kp SLASH                   &kp NUMBER_4  &kp NUMBER_5  &kp NUMBER_6  &kp ASTERISK  &none           &kp UNDERSCORE  &kp EXCLAMATION   &kp AT_SIGN        &kp HASH        &kp DOLLAR            &kp PERCENT
-&mt LEFT_SHIFT NUMBER_0  &kp NUMBER_1  &kp NUMBER_2  &kp NUMBER_3  &kp PERIOD    &kp EQUAL       &kp SEMICOLON   &kp LEFT_BRACKET  &kp RIGHT_BRACKET  &kp LEFT_BRACE  &kp RIGHT_BRACE       &kp BACKSLASH
-&trans                      &trans           &trans           &trans           &trans        &trans          &trans          &trans                                                                     &kp PIPE
+&kp MINUS               &kp NUMBER_7  &kp NUMBER_8  &kp NUMBER_9  &kp PLUS                                    &kp CARET         &kp AMPERSAND      &kp TILDE       &kp LEFT_PARENTHESIS  &kp RIGHT_PARENTHESIS
+&kp SLASH               &kp NUMBER_4  &kp NUMBER_5  &kp NUMBER_6  &kp ASTERISK  &none           &kp UNDERSCORE  &kp EXCLAMATION   &kp AT_SIGN        &kp HASH        &kp DOLLAR            &kp PERCENT
+&mt LEFT_SHIFT NUMBER_0 &kp NUMBER_1  &kp NUMBER_2  &kp NUMBER_3  &kp PERIOD    &kp EQUAL       &kp SEMICOLON   &kp LEFT_BRACKET  &kp RIGHT_BRACKET  &kp LEFT_BRACE  &kp RIGHT_BRACE       &kp BACKSLASH
+&trans                  &trans        &trans        &trans        &trans        &trans          &trans          &trans                                                                     &kp PIPE
             >;
+        };
+
+        /* 左手=カーソル / 右手 YUIO=⌘+矢印（Excelでセルの切れ目までジャンプ） / 内側キー=スクショ */
+        ARROW {
+            bindings = <
+&kp ESCAPE      &kp LC(LS(TAB))         &kp UP_ARROW          &kp LC(TAB)              &kp LG(W)                                  &kp LG(LEFT_ARROW)  &kp LG(DOWN_ARROW)    &kp LG(UP_ARROW)  &kp LG(RIGHT_ARROW)    &trans
+&kp HOME        &kp LEFT_ARROW          &kp DOWN_ARROW        &kp RIGHT_ARROW          &kp END       &none                        &trans              &kp LG(LEFT_BRACKET)  &trans            &trans  &kp LG(RIGHT_BRACKET)  &trans
+&kp LEFT_SHIFT  &kp LG(LS(LEFT_ARROW))  &kp LG(LS(NUMBER_4))  &kp LG(LS(RIGHT_ARROW))  &trans        &kp LC(LG(LS(NUMBER_4)))     &trans              &trans                &trans            &trans  &trans                 &trans
+&trans          &trans                  &trans                &trans                   &trans        &trans                       &trans              &trans                                                           &kp DEL
+            >;
+
+            sensor-bindings = <&inc_dec_kp LC(PAGE_UP) LC(PAGE_DOWN)>;
         };
 
         MOUSE {
@@ -244,44 +178,21 @@
             >;
         };
 
-        /* 右手 YUIO = ⌘+矢印（Excelでセルの切れ目までジャンプ） */
-        ARROW_MAC {
-            bindings = <
-&kp ESCAPE      &kp LC(LS(TAB))         &kp UP_ARROW    &kp LC(TAB)              &kp LG(W)                                      &kp LG(LEFT_ARROW)  &kp LG(DOWN_ARROW)  &kp LG(UP_ARROW)  &kp LG(RIGHT_ARROW)  &trans
-&kp HOME        &kp LEFT_ARROW          &kp DOWN_ARROW  &kp RIGHT_ARROW          &kp END       &none                     &trans  &kp LG(LEFT_BRACKET)  &trans  &trans  &kp LG(RIGHT_BRACKET)  &trans
-&kp LEFT_SHIFT  &kp LG(LS(LEFT_ARROW))  &kp LG(LS(NUMBER_4))  &kp LG(LS(RIGHT_ARROW))  &trans  &kp LC(LG(LS(NUMBER_4)))  &trans  &trans                &trans  &trans  &trans                 &trans
-&trans          &trans                  &trans          &kp LC(LEFT_ARROW)       &trans        &trans                    &trans  &trans                                                       &kp DEL
-            >;
-
-            sensor-bindings = <&inc_dec_kp LC(PAGE_UP) LC(PAGE_DOWN)>;
-        };
-
-        /* 右手 YUIO = Ctrl+矢印（Excelでセルの切れ目までジャンプ） */
-        ARROW_WIN {
-            bindings = <
-&kp ESCAPE      &kp LC(LS(TAB))         &kp UP_ARROW    &kp LC(TAB)              &kp LC(W)                                      &kp LC(LEFT_ARROW)  &kp LC(DOWN_ARROW)  &kp LC(UP_ARROW)  &kp LC(RIGHT_ARROW)  &trans
-&kp HOME        &kp LEFT_ARROW          &kp DOWN_ARROW  &kp RIGHT_ARROW          &kp END       &none                &trans  &kp LA(LEFT_ARROW)  &trans  &trans  &kp LA(RIGHT_ARROW)  &trans
-&kp LEFT_SHIFT  &kp LC(LS(LEFT_ARROW))  &kp LG(PRINTSCREEN)  &kp LC(LS(RIGHT_ARROW))  &trans   &kp LG(LS(S))        &trans  &trans              &kp LG(LC(LEFT_ARROW))  &kp LG(LC(RIGHT_ARROW))  &trans               &trans
-&trans          &trans                  &trans          &kp LA(LS(TAB))          &trans        &trans               &trans  &trans                                                   &kp DEL
-            >;
-
-            sensor-bindings = <&inc_dec_kp LC(PAGE_UP) LC(PAGE_DOWN)>;
-        };
-
         /*
-         * EXCEL レイヤー（「ー」キー長押し中）
-         * 右手で「ー」を押さえたまま、左手だけでExcelの主要ショートカットを叩く。
-         * リボン順次押し（ピボット・ウィンドウ固定・クリア・幅最適化）はマクロ化。
+         * EXCEL（Mac版 Excel のショートカット）— 右手で「ー」を押さえたまま左手で叩く
+         *  Q=F2 セル編集   W=⌘T 絶対参照   E=⌘1 書式   R=⌘⇧F フィルタ   T=⌘⌃V 形式貼付
+         *  A=⌘F 検索       S=⌃H 置換       D=⇧Space 行選択  F=⌃Space 列選択  G=⌥Enter セル内改行
+         *  Z=⌃I 行列追加   X=⌃- 行列削除   C=⌃Enter 一括入力  V=⌥← 前シート  B=⌥→ 次シート
          */
         EXCEL {
             bindings = <
-&kp F2          &kp F4           &kp LC(NUMBER_1)  &kp LC(LS(L))     &kp LC(LA(V))                             &trans  &trans  &trans  &trans  &trans
-&kp LC(F)       &kp LC(H)        &kp LS(SPACE)     &kp LC(SPACE)     &kp LA(ENTER)   &none          &trans     &trans  &trans  &trans  &trans  &trans
-&kp LC(LS(EQUAL)) &kp LC(MINUS)  &kp LC(ENTER)     &kp LC(PAGE_UP)   &kp LC(PAGE_DOWN) &xl_pivot    &trans     &trans  &trans  &trans  &trans  &trans
-&xl_freeze      &xl_clear        &xl_colfit        &xl_rowfit        &trans          &trans         &trans     &trans                          &trans
+&kp F2        &kp LG(T)      &kp LG(NUMBER_1)  &kp LG(LS(F))        &kp LG(LC(V))                              &trans  &trans  &trans  &trans  &trans
+&kp LG(F)     &kp LC(H)      &kp LS(SPACE)     &kp LC(SPACE)        &kp LA(ENTER)        &none          &trans  &trans  &trans  &trans  &trans  &trans
+&kp LC(I)     &kp LC(MINUS)  &kp LC(ENTER)     &kp LA(LEFT_ARROW)   &kp LA(RIGHT_ARROW)  &trans         &trans  &trans  &trans  &trans  &trans  &trans
+&trans        &trans         &trans            &trans               &trans               &trans         &trans  &trans                          &trans
             >;
 
-            sensor-bindings = <&inc_dec_kp LC(PAGE_UP) LC(PAGE_DOWN)>;
+            sensor-bindings = <&inc_dec_kp LA(LEFT_ARROW) LA(RIGHT_ARROW)>;
         };
     };
 };
