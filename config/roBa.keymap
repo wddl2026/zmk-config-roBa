@@ -16,8 +16,9 @@
  * │ 6 EXCEL     … Excelショートカット（「ー」長押し）│
  * └──────────────────────────────────────────────┘
  *
- * 親指（左）: [Space] [⌘] [⌥] [画面切替] [かな] [英数]
- *   Space長押し=数字 / 英数長押し=矢印 / 画面切替=次の画面(⌃→)、英数＋同キー=前の画面(⌃←)
+ * 親指（左）: [Space] [⌘] [⌥/かな] [⌃←] [⌃→] [英数]
+ *   Space長押し=数字 / 英数長押し=矢印 / ⌥キーはタップ=かな・長押し=⌥
+ *   ⌃← ⌃→ = スペース（フルスクリーンアプリ）の左右移動。元の設定と同じ2キー構成
  * 親指（右）: [⌫] [Enter] [右クリック]   Enter長押し=Fn
  *
  * コピー/ペースト: 親指の ⌘ ＋ C / V
@@ -109,7 +110,7 @@
 &kp Q             &kp W         &kp E         &kp R                                    &kp T                                            &kp Y          &kp U        &lt 5 I    &kp O    &kp P
 &kp A             &kp S         &kp D         &kp F                                    &kp G        &none                               &lt 6 MINUS    &kp H          &kp J        &kp K      &kp L    &kp SQT
 &mt LEFT_SHIFT Z  &kp X         &kp C         &kp V                                    &kp B        &kp LC(LA(A))                       &mkp MB1       &kp N          &kp M        &kp COMMA  &kp DOT  &kp SLASH
-&lt 2 SPACE       &kp LEFT_GUI  &kp LEFT_ALT  &kp LC(RIGHT_ARROW)                      &kp LANG1    &lt_to_layer_0 3 LANG2              &kp BACKSPACE  &lt 1 ENTER                                      &mkp MB2
+&lt 2 SPACE       &kp LEFT_GUI  &mt LEFT_ALT LANG1  &kp LC(LEFT_ARROW)                 &kp LC(RIGHT_ARROW)  &lt_to_layer_0 3 LANG2              &kp BACKSPACE  &lt 1 ENTER                                      &mkp MB2
             >;
 
             sensor-bindings = <&inc_dec_kp UP DOWN>;
@@ -141,7 +142,7 @@
 &kp ESCAPE      &kp LC(LS(TAB))         &kp UP_ARROW          &kp LC(TAB)              &kp LG(W)                                  &kp LG(LEFT_ARROW)  &kp LG(DOWN_ARROW)    &kp LG(UP_ARROW)  &kp LG(RIGHT_ARROW)    &trans
 &kp HOME        &kp LEFT_ARROW          &kp DOWN_ARROW        &kp RIGHT_ARROW          &kp END       &none                        &trans              &kp LG(LEFT_BRACKET)  &trans            &trans  &kp LG(RIGHT_BRACKET)  &trans
 &kp LEFT_SHIFT  &kp LG(LS(LEFT_ARROW))  &kp LG(LS(NUMBER_4))  &kp LG(LS(RIGHT_ARROW))  &trans        &kp LC(LG(LS(NUMBER_4)))     &trans              &trans                &trans            &trans  &trans                 &trans
-&trans          &trans                  &trans                &kp LC(LEFT_ARROW)       &trans        &trans                       &trans              &trans                                                           &kp DEL
+&trans          &trans                  &trans                &trans                   &trans        &trans                       &trans              &trans                                                           &kp DEL
             >;
 
             sensor-bindings = <&inc_dec_kp LC(PAGE_UP) LC(PAGE_DOWN)>;
