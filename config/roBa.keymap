@@ -4,27 +4,34 @@
 #include <dt-bindings/zmk/pointing.h>
 
 /*
- * roBa キーマップ — Mac 専用版
+ * roBa キーマップ — Mac 専用版（音声入力＋トラックボール中心）
  *
- * ┌ レイヤー一覧 ────────────────────────────────┐
- * │ 0 BASE      … 通常                            │
- * │ 1 FUNCTION  … F1-F12＋Bluetooth（Enter長押し） │
- * │ 2 NUM       … 数字・記号（Space長押し）        │
- * │ 3 ARROW     … 移動・編集・スクショ（英数長押し） │
- * │ 4 MOUSE     … ボール操作で自動                 │
- * │ 5 SCROLL    … スクロール（I または M 長押し）   │
- * │ 6 EXCEL     … Excelショートカット（「ー」長押し）│
+ * ┌ ワンタップでできること ─────────────────────────────┐
+ * │ Aqua Voice     … 左内側の下のキー（⌃⌥A）               │
+ * │ タブ切替       … ダイヤルを回す（⌃Tab / ⌃⇧Tab）        │
+ * │ 画面(スペース) … 親指 ⌃← / ⌃→                         │
+ * │ ウィンドウ一覧 … 親指 ⌃← と ⌃→ を同時押し（⌃↑）        │
+ * │ スクショ       … 親指 ⌃→ と 英数 を同時押し              │
+ * │                  （範囲を選ぶ→クリップボードへ。⌘Vで貼付）│
+ * └──────────────────────────────────────────────┘
+ *
+ * ┌ レイヤー一覧（すべて「押しっぱなし」の間だけ有効）──────┐
+ * │ 0 BASE      … 通常                                      │
+ * │ 1 FUNCTION  … F1-F12＋Bluetooth（Enter長押し）          │
+ * │ 2 NUM       … 数字・記号（Space長押し）                  │
+ * │ 3 ARROW     … 操作：矢印・タブ/アプリ切替・スクショ（英数長押し）│
+ * │ 4 MOUSE     … ボール操作で自動                           │
+ * │ 5 SCROLL    … スクロール（I または M 長押し＋ボール）      │
+ * │ 6 EXCEL     … Excelショートカット（「ー」長押し）          │
  * └──────────────────────────────────────────────┘
  *
  * 親指（左）: [Space] [⌘] [⌥/かな] [⌃←] [⌃→] [英数]
- *   Space長押し=数字 / 英数長押し=矢印 / ⌥キーはタップ=かな・長押し=⌥
- *   ⌃← ⌃→ = スペース（フルスクリーンアプリ）の左右移動。元の設定と同じ2キー構成
+ *   Space長押し=数字 / 英数長押し=操作 / ⌥キーはタップ=かな・長押し=⌥
  * 親指（右）: [⌫] [Enter] [右クリック]   Enter長押し=Fn
  *
  * コピー/ペースト: 親指の ⌘ ＋ C / V
  * クリック: トラックボール脇のキー=左クリック（常時）、最右下=右クリック（常時）
  *           ボール操作中は J/K/L も 左/中/右クリック
- * Aqua Voice: 左内側の下のキー（⌃⌥A）
  *
  * ※ 位置15（左内側の上）はダイヤルの場所で物理キーが無いため全レイヤーで &none
  */
@@ -78,6 +85,18 @@
             bindings = <&kp EQUAL>;
             key-positions = <24 25>;
         };
+
+        /* 親指 ⌃← ＋ ⌃→ 同時押し = Mission Control（全ウィンドウ一覧→ボールで選んでクリック） */
+        mission_control {
+            bindings = <&kp LC(UP_ARROW)>;
+            key-positions = <37 38>;
+        };
+
+        /* 親指 ⌃→ ＋ 英数 同時押し = スクショ（範囲選択→クリップボード。⌘Vで貼り付け） */
+        screenshot {
+            bindings = <&kp LC(LG(LS(NUMBER_4)))>;
+            key-positions = <38 39>;
+        };
     };
 
     macros {
@@ -106,6 +125,7 @@
         compatible = "zmk,keymap";
 
         BASE {
+            display-name = "Base";
             bindings = <
 &kp Q             &kp W         &kp E         &kp R                                    &kp T                                            &kp Y          &kp U        &lt 5 I    &kp O    &kp P
 &kp A             &kp S         &kp D         &kp F                                    &kp G        &none                               &lt 6 MINUS    &kp H          &kp J        &kp K      &kp L    &kp SQT
@@ -113,10 +133,12 @@
 &lt 2 SPACE       &kp LEFT_GUI  &mt LEFT_ALT LANG1  &kp LC(LEFT_ARROW)                 &kp LC(RIGHT_ARROW)  &lt_to_layer_0 3 LANG2              &kp BACKSPACE  &lt 1 ENTER                                      &mkp MB2
             >;
 
-            sensor-bindings = <&inc_dec_kp UP DOWN>;
+            /* ダイヤル = タブ切替（次のタブ / 前のタブ）。ボール操作中(MOUSE)も同じ動作 */
+            sensor-bindings = <&inc_dec_kp LC(TAB) LC(LS(TAB))>;
         };
 
         FUNCTION {
+            display-name = "Fn";
             bindings = <
 &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2   &bt BT_SEL 3  &bt BT_SEL 4                        &kp F1   &kp F2  &kp F3  &kp F4  &kp F5
 &trans        &trans        &trans         &trans        &trans  &none           &kp F13      &kp F6   &kp F7  &kp F8  &kp F9  &kp F10
@@ -128,6 +150,7 @@
         };
 
         NUM {
+            display-name = "Num";
             bindings = <
 &kp MINUS               &kp NUMBER_7  &kp NUMBER_8  &kp NUMBER_9  &kp PLUS                                    &kp CARET         &kp AMPERSAND      &kp TILDE       &kp LEFT_PARENTHESIS  &kp RIGHT_PARENTHESIS
 &kp SLASH               &kp NUMBER_4  &kp NUMBER_5  &kp NUMBER_6  &kp ASTERISK  &none           &kp UNDERSCORE  &kp EXCLAMATION   &kp AT_SIGN        &kp HASH        &kp DOLLAR            &kp PERCENT
@@ -136,30 +159,38 @@
             >;
         };
 
-        /* 左手=カーソル / 右手 YUIO=⌘+矢印（Excelでセルの切れ目までジャンプ） / 内側キー=スクショ */
+        /*
+         * ARROW（操作）— 英数を押しっぱなしの間だけ
+         *  左手: 矢印・行頭/行末・選択 / W,R=前後のタブ  T=タブを閉じる  Q=Esc
+         *        C=スクショ(ファイル保存)  内側=スクショ(クリップボード)  B=スクショ/録画メニュー
+         *  右手: YUIO=⌘+矢印（行頭・文末/Excelのセル端へジャンプ）
+         *        H=戻る  J=前のアプリ(⌘Tab)  K=ウィンドウ一覧  L=進む  最右下=Delete
+         *  ダイヤル: ↑ / ↓
+         */
         ARROW {
+            display-name = "Nav";
             bindings = <
-&kp ESCAPE      &kp LC(LS(TAB))         &kp UP_ARROW          &kp LC(TAB)              &kp LG(W)                                  &kp LG(LEFT_ARROW)  &kp LG(DOWN_ARROW)    &kp LG(UP_ARROW)  &kp LG(RIGHT_ARROW)    &trans
-&kp HOME        &kp LEFT_ARROW          &kp DOWN_ARROW        &kp RIGHT_ARROW          &kp END       &none                        &trans              &kp LG(LEFT_BRACKET)  &trans            &trans  &kp LG(RIGHT_BRACKET)  &trans
-&kp LEFT_SHIFT  &kp LG(LS(LEFT_ARROW))  &kp LG(LS(NUMBER_4))  &kp LG(LS(RIGHT_ARROW))  &trans        &kp LC(LG(LS(NUMBER_4)))     &trans              &trans                &trans            &trans  &trans                 &trans
-&trans          &trans                  &trans                &trans                   &trans        &trans                       &trans              &trans                                                           &kp DEL
+&kp ESCAPE      &kp LC(LS(TAB))         &kp UP_ARROW          &kp LC(TAB)              &kp LG(W)                                       &kp LG(LEFT_ARROW)  &kp LG(DOWN_ARROW)    &kp LG(UP_ARROW)  &kp LG(RIGHT_ARROW)    &trans
+&kp HOME        &kp LEFT_ARROW          &kp DOWN_ARROW        &kp RIGHT_ARROW          &kp END             &none                       &trans              &kp LG(LEFT_BRACKET)  &kp LG(TAB)       &kp LC(UP_ARROW)  &kp LG(RIGHT_BRACKET)  &trans
+&kp LEFT_SHIFT  &kp LG(LS(LEFT_ARROW))  &kp LG(LS(NUMBER_4))  &kp LG(LS(RIGHT_ARROW))  &kp LG(LS(NUMBER_5))  &kp LC(LG(LS(NUMBER_4)))  &trans              &trans                &trans            &trans  &trans                 &trans
+&trans          &trans                  &trans                &trans                   &trans              &trans                      &trans              &trans                                                           &kp DEL
             >;
 
-            sensor-bindings = <&inc_dec_kp LC(PAGE_UP) LC(PAGE_DOWN)>;
+            sensor-bindings = <&inc_dec_kp UP_ARROW DOWN_ARROW>;
         };
 
         MOUSE {
+            display-name = "Mouse";
             bindings = <
 &trans  &trans  &trans  &trans  &trans                      &trans  &trans    &trans    &trans    &trans
 &trans  &trans  &trans  &trans  &trans  &none       &trans  &trans  &mkp MB1  &mkp MB3  &mkp MB2  &trans
 &trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &lt 5 M   &trans    &trans    &trans
 &trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans                                &trans
             >;
-
-            sensor-bindings = <&inc_dec_kp LG(LS(Z)) LG(Z)>;
         };
 
         SCROLL {
+            display-name = "Scroll";
             bindings = <
 &trans  &trans  &trans  &trans  &trans                      &trans  &trans  &trans  &trans  &trans
 &trans  &trans  &trans  &trans  &trans  &none       &trans  &trans  &trans  &trans  &trans  &trans
@@ -175,6 +206,7 @@
          *  Z=⌃I 行列追加   X=⌃- 行列削除   C=⌃Enter 一括入力  V=⌥← 前シート  B=⌥→ 次シート
          */
         EXCEL {
+            display-name = "Excel";
             bindings = <
 &kp F2        &kp LG(T)      &kp LG(NUMBER_1)  &kp LG(LS(F))        &kp LG(LC(V))                              &trans  &trans  &trans  &trans  &trans
 &kp LG(F)     &kp LC(H)      &kp LS(SPACE)     &kp LC(SPACE)        &kp LA(ENTER)        &none          &trans  &trans  &trans  &trans  &trans  &trans
